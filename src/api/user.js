@@ -1,3 +1,4 @@
+// 引入axios 并进行二次封装
 import request from '@/utils/request'
 
 export function login(data) {

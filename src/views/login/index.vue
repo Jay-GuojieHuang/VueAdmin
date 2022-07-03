@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">登陆</h3>
       </div>
 
       <el-form-item prop="username">
@@ -41,7 +41,7 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
@@ -105,16 +105,29 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+    async  handleLogin() {
+      // 这里是在验证表单元素（用户名和密码）是否符合规则
+      this.$refs.loginForm.validate(async(valid) => {
         if (valid) {
+          // 如果为真 loading效果
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          // this.$store.dispatch('user/login', this.loginForm).then(() => {
+          //   // 如果成功则进行路由跳转
+          //   this.$router.push({ path: this.redirect || '/' })
+          //   this.loading = false
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+          try {
+            await this.$store.dispatch('user/login', this.loginForm)
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-          }).catch(() => {
+          } catch (error) {
             this.loading = false
-          })
+            // alert(error.message)
+          }
+
+          // console.log(res)
         } else {
           console.log('error submit!!')
           return false
@@ -173,7 +186,7 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
+$bg:#293441;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 

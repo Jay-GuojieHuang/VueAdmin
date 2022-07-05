@@ -66,6 +66,7 @@ export default {
         if (res.code === 200) {
           this.list2 = res.data
           // this.$message.success('获取数据成功')
+          this.$emit('getCategoryId', this.cForm)
         }
       } catch (error) {
         this.$message.danger(error.message)
@@ -81,6 +82,7 @@ export default {
         if (res.code === 200) {
           this.list3 = res.data
           // this.$message.success('获取数据成功')
+          this.$emit('getCategoryId', this.cForm)
         }
       } catch (error) {
         this.$message.danger(error.message)

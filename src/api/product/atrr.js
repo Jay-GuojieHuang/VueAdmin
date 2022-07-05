@@ -22,3 +22,9 @@ export const reqGetAttrList = (category1id, category2id, category3id) => request
   url: `/admin/product/attrInfoList/${category1id}/${category2id}/${category3id}`,
   method: 'get'
 })
+// 添加属性名与属性值的接口
+export const reqAddAttr = (data) => request({
+  url: `/admin/product/saveAttrInfo/`,
+  method: 'post',
+  data
+})

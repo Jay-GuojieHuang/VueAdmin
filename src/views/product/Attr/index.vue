@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-card style="margin: 20px 0px">
-      <CategorySelect @getCategoryId="getCategoryId" />
+      <CategorySelect :is-show="isShowTable" @getCategoryId="getCategoryId" />
     </el-card>
     <el-card>
-      <div v-show="isShowTable">
+      <div v-show="!isShowTable">
         <el-button type="primary" icon="el-icon-plus" style="margin-bottom: 10px" :disabled="!category3Id" @click="addAttr"> 添加属性</el-button>
         <el-table style="width: 100%" border :data="attrList">
           <el-table-column type="index" label="序号" width="50" align="center" />
@@ -25,7 +25,7 @@
         </el-table>
       </div>
       <!-- 添加或修改属性的结构 -->
-      <div v-show="!isShowTable">
+      <div v-show="isShowTable">
         <el-form ref="form" :inline="true">
           <el-form-item label="属性名">
             <el-input v-model="attrInfo.attrName" placeholder="请输入属性名" />
@@ -37,19 +37,25 @@
           <el-table-column type="index" label="序号" width="50" align="center" />
           <el-table-column prop="prop" label="属性名称" width="width">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.flag" v-model="scope.row.valueName" placeholder="请输入属性值名称" size="mini" @blur="changeFlag(scope.row)" @keyup.native.enter="changeFlag(scope.row)" />
-              <span v-if="!scope.row.flag" style="display: block" @click="scope.row.flag=!scope.row.flag">{{ scope.row.valueName }}</span>
+              <el-input v-if="scope.row.flag" :ref="scope.$index" v-model="scope.row.valueName" placeholder="请输入属性值名称" size="mini" @blur="changeFlag(scope.row)" @keyup.native.enter="changeFlag(scope.row)" />
+              <span v-if="!scope.row.flag" style="display: block" @click="toEdit(scope.row,scope.$index)">{{ scope.row.valueName }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-            <template slot-scope="">
-              <el-button type="danger" size="mini" icon="el-icon-delete" />
+            <template slot-scope="{$index}">
+              <el-popconfirm
+                :ref="`popover-${$index}`"
+                title="这是一段内容确定删除吗？"
+                @onConfirm="popConfirm($index)"
+              >
+                <el-button slot="reference" type="danger" size="mini" icon="el-icon-delete">删除</el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
 
         </el-table>
-        <el-button type="primary" @click="isShowTable=true">保存</el-button>
-        <el-button @click="isShowTable=true">取消</el-button>
+        <el-button type="primary" :disabled="checkBeforeSave()" @click="addOrUpdateAttr">保存</el-button>
+        <el-button @click="isShowTable=false">取消</el-button>
       </div>
     </el-card>
   </div>
@@ -64,12 +70,13 @@ export default {
     return {
       attrList: [],
       isShowTable: false,
+      category1Id: '',
+      category2Id: '',
       category3Id: '',
       // 收集或修改属性用
       attrInfo: {
         attrName: '',
-        attrValueList: [
-        ],
+        attrValueList: [],
         categoryId: '',
         categoryLevel: 3
       }
@@ -77,10 +84,12 @@ export default {
   },
   methods: {
     getCategoryId(cForm) {
-      const { category1Id, category2Id } = cForm
+      // const { category1Id, category2Id } = cForm
+      this.category1Id = cForm.category1Id
+      this.category2Id = cForm.category2Id
       this.category3Id = cForm.category3Id
       if (this.category3Id) {
-        this.getAttrList(category1Id, category2Id, this.category3Id)
+        this.getAttrList(this.category1Id, this.category2Id, this.category3Id)
       } else {
         this.attrList = []
       }
@@ -93,28 +102,31 @@ export default {
         this.$message.danger('获取品牌属性失败，请重试')
       }
     },
-    editAttr(row) {
-      this.isShowTable = false
+    editAttr(row, $index) {
+      this.isShowTable = true
       // console.log(row)
       // this.attrInfo = row
       this.attrInfo = cloneDeep(row)
+      this.attrInfo.attrValueList.forEach(item => {
+        this.$set(item, 'flag', false)
+      })
     },
     addAttrValue() {
-      this.attrInfo.attrValueList.push(
-        {
-          attrId: this.attrInfo.id,
-          valueName: '',
-          flag: true
-        }
-      )
+      this.attrInfo.attrValueList.push({
+        attrId: this.attrInfo.id,
+        valueName: '',
+        flag: true
+      })
+      this.$nextTick(() => {
+        this.$refs[this.attrInfo.attrValueList.length - 1].focus()
+      })
     },
     // 添加属性按钮的回调
     addAttr() {
-      this.isShowTable = false
+      this.isShowTable = true
       this.attrInfo = {
         attrName: '',
-        attrValueList: [
-        ],
+        attrValueList: [],
         categoryId: this.category3Id,
         categoryLevel: 3
       }
@@ -123,7 +135,64 @@ export default {
       if (row.valueName.trim() === '') {
         this.$message.warning('请输入正确的属性值')
       } else {
-        row.flag = false
+        const res = this.attrInfo.attrValueList.some(item => {
+          if (item !== row) {
+            return item.valueName === row.valueName
+          }
+        })
+        if (res) {
+          this.$message.warning('已有重复项')
+          row.valueName = ''
+        } else {
+          row.flag = false
+        }
+      }
+    },
+    toEdit(row, $index) {
+      row.flag = true
+      // console.log($index)
+      this.$nextTick(() => {
+        this.$refs[$index].focus()
+      })
+    },
+    popConfirm(index) {
+      this.attrInfo.attrValueList.splice(index, 1)
+    },
+    // 保存或更新按钮的数据
+    async addOrUpdateAttr() {
+      // 整理参数：
+      // 如果用户添加了空的属性值 则不该添加到服务器
+      // 提交給服务器的数据不应该包含flag字段
+      this.attrInfo.attrValueList = this.attrInfo.attrValueList.filter(item => {
+        // 返回不是空串的结果并删除flag属性
+        if (item.valueName !== '') {
+          delete item.flag
+          return true
+        }
+      })
+
+      // 发请求
+      try {
+        const res = await this.$API.attr.reqAddorUpdateAttr(this.attrInfo)
+        if (res.code === 200) {
+          this.$message.success('保存成功！')
+          this.getAttrList(this.category1Id, this.category2Id, this.category3Id)
+        }
+      } catch (error) {
+        this.$message.warning('保存失败，请重试！')
+      }
+      this.isShowTable = false
+    },
+    checkBeforeSave() {
+      if (this.attrInfo.attrValueList.length > 0) {
+        // alert(123)
+        if (this.attrInfo.attrValueList.length === 1 && this.attrInfo.attrValueList[0].valueName === '') {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return true
       }
     }
   }

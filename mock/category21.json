@@ -1,0 +1,17 @@
+[
+  {
+    "id": 13,
+    "name": "手机通讯",
+    "category1Id": 2
+  },
+  {
+    "id": 14,
+    "name": "运营商",
+    "category1Id": 2
+  },
+  {
+    "id": 15,
+    "name": "手机配件",
+    "category1Id": 2
+  }
+]

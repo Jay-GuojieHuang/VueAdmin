@@ -12,8 +12,12 @@ export const reqCategory1List = () => mockRequests({
   method: 'get'
 })
 // 获取二级分类数据
-export const reqCategory2List = (category1id) => request({
-  url: `/admin/product/getCategory2/${category1id}`,
+// export const reqCategory2List = (category1id) => request({
+//   url: `/admin/product/getCategory2/${category1id}`,
+//   method: 'get'
+// })
+export const reqCategory2List = (category1id) => mockRequests({
+  url: `/getCategory2/${category1id}`,
   method: 'get'
 })
 // 获取三级分类数据

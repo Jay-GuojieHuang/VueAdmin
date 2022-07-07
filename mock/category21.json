@@ -1,17 +1,62 @@
 [
   {
-    "id": 13,
-    "name": "手机通讯",
-    "category1Id": 2
+    "id": 1,
+    "name": "电子书刊",
+    "category1Id": 1
   },
   {
-    "id": 14,
-    "name": "运营商",
-    "category1Id": 2
+    "id": 2,
+    "name": "音像",
+    "category1Id": 1
   },
   {
-    "id": 15,
-    "name": "手机配件",
-    "category1Id": 2
+    "id": 3,
+    "name": "英文原版",
+    "category1Id": 1
+  },
+  {
+    "id": 4,
+    "name": "文艺",
+    "category1Id": 1
+  },
+  {
+    "id": 5,
+    "name": "少儿",
+    "category1Id": 1
+  },
+  {
+    "id": 6,
+    "name": "人文社科",
+    "category1Id": 1
+  },
+  {
+    "id": 7,
+    "name": "经管励志",
+    "category1Id": 1
+  },
+  {
+    "id": 8,
+    "name": "生活",
+    "category1Id": 1
+  },
+  {
+    "id": 9,
+    "name": "科技",
+    "category1Id": 1
+  },
+  {
+    "id": 10,
+    "name": "教育",
+    "category1Id": 1
+  },
+  {
+    "id": 11,
+    "name": "港台图书",
+    "category1Id": 1
+  },
+  {
+    "id": 12,
+    "name": "其他",
+    "category1Id": 1
   }
 ]

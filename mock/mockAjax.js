@@ -26,7 +26,6 @@ const requests = axios.create({
 requests.interceptors.request.use((config) => {
   // config: 配置对象，对象里有个属性很重要，header请求头
   // 进度条开始
-  alert('mock')
   nprogress.start()
 
   return config
@@ -37,7 +36,7 @@ requests.interceptors.response.use(
   (res) => {
     // 成功的回调，响应拦截器可以检测到 可以做一些事情
     // 进度条结束
-    alert('mockdone')
+
     nprogress.done()
     return res.data
   },

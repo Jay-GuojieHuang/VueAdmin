@@ -2,7 +2,13 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+// 引用nprogress
+import nprogress from 'nprogress'
+// nprogress.start()进度条开始
+// nprogress.done()进度条结束
 
+// 引入nprogress样式
+import 'nprogress/nprogress.css'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
@@ -12,6 +18,7 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
+    nprogress.start()
     // do something before request is sent
 
     if (store.getters.token) {
@@ -70,6 +77,8 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      nprogress.done()
+
       return res
     }
   },

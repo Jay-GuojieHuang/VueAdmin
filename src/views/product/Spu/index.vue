@@ -1,41 +1,52 @@
 <template>
   <div>
     <el-card style="margin: 20px 0">
-      <CategorySelect :is-show="isShow" @getCategoryId="getCategoryId" />
+      <CategorySelect :is-show="!scene ==0" @getCategoryId="getCategoryId" />
     </el-card>
     <el-card>
-      <el-button type="primary" icon="el-icon-plus" :disabled="!category3Id">添加SPU </el-button>
-      <el-table :data="records" style="width: 100%; margin-top: 10px" border="">
-        <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="spuName" label="SPU名称" width="width" />
-        <el-table-column prop="description" label="SPU描述" width="width" />
-        <el-table-column prop="prop" label="操作" width="width">
-          <template>
-            <hint-button title="新增" type="success" icon="el-icon-plus" size="mini" />
-            <hint-button title="修改" type="warning" icon="el-icon-edit" size="mini" />
-            <hint-button title="查看" type="info" icon="el-icon-info" size="mini" />
-            <hint-button title="删除" type="danger" icon="el-icon-delete" size="mini" />
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        style="margin-top:10px"
-        align="center"
-        layout="prev, pager, next, jumper,->, total, sizes"
-        :total="total"
-        :page-size="3"
-        :page-sizes="[3,5,8]"
-        :current-page="page"
-        @current-change="curChange"
-        @size-change="handleSizeChange"
-      />
+      <div v-show="scene === 0">
+        <el-button type="primary" icon="el-icon-plus" :disabled="!category3Id" @click="addSpu">添加SPU </el-button>
+        <el-table :data="records" style="width: 100%; margin-top: 10px" border="">
+          <el-table-column type="index" label="序号" width="80" align="center" />
+          <el-table-column prop="spuName" label="SPU名称" width="width" />
+          <el-table-column prop="description" label="SPU描述" width="width" />
+          <el-table-column prop="prop" label="操作" width="width">
+            <template slot-scope="{row}">
+              <hint-button title="新增" type="success" icon="el-icon-plus" size="mini" />
+              <hint-button title="修改" type="warning" icon="el-icon-edit" size="mini" @click="updateSpu(row)" />
+              <hint-button title="查看" type="info" icon="el-icon-info" size="mini" />
+              <hint-button title="删除" type="danger" icon="el-icon-delete" size="mini" />
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          style="margin-top:10px"
+          align="center"
+          layout="prev, pager, next, jumper,->, total, sizes"
+          :total="total"
+          :page-size="3"
+          :page-sizes="[3,5,8]"
+          :current-page="page"
+          @current-change="curChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
+      <SkuForm v-show="scene ===2" />
+      <SpuForm v-show="scene ===1" ref="spu" @cancel="cancel" />
     </el-card>
   </div>
 </template>
 
 <script>
+// 引入子组件
+import SkuForm from './SkuForm'
+import SpuForm from './SpuForm'
 export default {
   name: 'Spu',
+  components: {
+    SkuForm,
+    SpuForm
+  },
   data() {
     return {
       category1Id: '',
@@ -45,7 +56,8 @@ export default {
       page: 1,
       limit: 3,
       records: [], // spu数据列表
-      total: 0 // 分页器总页数
+      total: 0, // 分页器总页数，
+      scene: 1 // 用于切换组件
     }
   },
   methods: {
@@ -76,7 +88,19 @@ export default {
     handleSizeChange(limit) {
       this.limit = limit
       this.getSpuList()
+    },
+    addSpu() {
+      // 添加按钮的回调
+      this.scene = 1
+    },
+    updateSpu(row) {
+      this.scene = 1
+      this.$refs.spu.initSpuData(row)
+    },
+    cancel() {
+      this.scene = 0
     }
+
   }
 }
 </script>

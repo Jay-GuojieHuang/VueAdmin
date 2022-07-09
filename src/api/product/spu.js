@@ -33,3 +33,19 @@ export const reqBaseSaleAttrList = () => request({
   method: 'get'
 })
 
+// 修改和添加spu 唯一区别是携带的参数是否带id
+export const reqAddOrUpdateSpu = (spuInfo) => {
+  if (spuInfo.id) {
+  // 有id是修改
+    return request({
+      url: `admin/product/updateSpuInfo`,
+      method: 'post',
+      data: spuInfo
+    })
+  } else {
+    return request({
+      url: `admin/product/saveSpuInfo`,
+      method: 'post'
+    })
+  }
+}

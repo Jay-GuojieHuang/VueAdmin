@@ -32,7 +32,7 @@
         />
       </div>
       <SkuForm v-show="scene ===2" />
-      <SpuForm v-show="scene ===1" ref="spu" @cancel="cancel" />
+      <SpuForm v-show="scene ===1" ref="spu" @changeScene="changeScene" />
     </el-card>
   </div>
 </template>
@@ -57,7 +57,7 @@ export default {
       limit: 3,
       records: [], // spu数据列表
       total: 0, // 分页器总页数，
-      scene: 1 // 用于切换组件
+      scene: 0 // 用于切换组件
     }
   },
   methods: {
@@ -92,13 +92,16 @@ export default {
     addSpu() {
       // 添加按钮的回调
       this.scene = 1
+      // 发请求拿数据
+      this.$refs.spu.addSpuData()
     },
     updateSpu(row) {
       this.scene = 1
       this.$refs.spu.initSpuData(row)
     },
-    cancel() {
+    changeScene() {
       this.scene = 0
+      this.curChange(1)
     }
 
   }

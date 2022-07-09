@@ -45,7 +45,7 @@
             <template slot-scope="{$index}">
               <el-popconfirm
                 :ref="`popover-${$index}`"
-                title="这是一段内容确定删除吗？"
+                title="确定要删除吗？"
                 @onConfirm="popConfirm($index)"
               >
                 <el-button slot="reference" type="danger" size="mini" icon="el-icon-delete">删除</el-button>

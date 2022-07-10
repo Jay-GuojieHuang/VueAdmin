@@ -121,6 +121,8 @@ export default {
     },
     changeScene() {
       this.$emit('changeScene')
+      // 利用object.assign来清空数据
+      Object.assign(this._data, this.$options.data())
     },
 
     // 获取spu信息的数据
@@ -240,10 +242,14 @@ export default {
       if (res.code === 200) {
         this.$message.success('保存成功！')
         // 回到父组件
-        this.changeScene()
+        this.$emit('changeScene', this.spu.id ? '修改' : '新增')
+        // 利用object.assign来清空数据
+        Object.assign(this._data, this.$options.data())
       }
     },
-    async addSpuData() {
+    async addSpuData(category3Id) {
+      // 收集3级id
+      this.spu.category3Id = category3Id
       try {
         const trademarkRes = await this.$API.spu.reqTradeMarkList()
         if (trademarkRes.code === 200) {

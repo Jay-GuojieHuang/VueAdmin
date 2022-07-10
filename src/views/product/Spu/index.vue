@@ -12,10 +12,14 @@
           <el-table-column prop="description" label="SPU描述" width="width" />
           <el-table-column prop="prop" label="操作" width="width">
             <template slot-scope="{row}">
-              <hint-button title="新增" type="success" icon="el-icon-plus" size="mini" />
+              <hint-button title="新增" type="success" icon="el-icon-plus" size="mini" @click="addSku" />
               <hint-button title="修改" type="warning" icon="el-icon-edit" size="mini" @click="updateSpu(row)" />
               <hint-button title="查看" type="info" icon="el-icon-info" size="mini" />
-              <hint-button title="删除" type="danger" icon="el-icon-delete" size="mini" />
+              <el-popconfirm :ref="`popover-${$index}`" title="这是一段内容确定删除吗？" @onConfirm="popConfirm(row)">
+                <!-- <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini" />  -->
+                <hint-button slot="reference" title="删除" type="danger" icon="el-icon-delete" size="mini" />
+              </el-popconfirm>
+
             </template>
           </el-table-column>
         </el-table>
@@ -31,7 +35,7 @@
           @size-change="handleSizeChange"
         />
       </div>
-      <SkuForm v-show="scene ===2" />
+      <SkuForm v-show="scene ===2" ref="sku" />
       <SpuForm v-show="scene ===1" ref="spu" @changeScene="changeScene" />
     </el-card>
   </div>
@@ -81,8 +85,9 @@ export default {
         this.records = res.data.records
       }
     },
-    curChange(pager) {
+    curChange(pager = 1) {
       this.page = pager
+
       this.getSpuList()
     },
     handleSizeChange(limit) {
@@ -93,15 +98,48 @@ export default {
       // 添加按钮的回调
       this.scene = 1
       // 发请求拿数据
-      this.$refs.spu.addSpuData()
+      this.$refs.spu.addSpuData(this.category3Id)
     },
     updateSpu(row) {
       this.scene = 1
       this.$refs.spu.initSpuData(row)
     },
-    changeScene() {
+    changeScene(which) {
       this.scene = 0
-      this.curChange(1)
+      if (which) {
+        switch (which) {
+          case '修改':
+            this.curChange(this.page)
+            break
+          case '新增':
+            this.curChange(1)
+            break
+        }
+      } else {
+        this.curChange(this.page)
+      }
+    },
+    async popConfirm(row) {
+      // console.log(row)
+      const res = await this.$API.spu.reqDeleteSpu(row.id)
+      if (res.code === 200) {
+        this.$message.success('删除成功！')
+        if (this.records.length > 1) {
+          this.curChange(this.page)
+        } else {
+          if (this.page > 1) {
+            this.curChange(this.page - 1)
+          } else {
+            this.curChange()
+          }
+        }
+      }
+    },
+    // 新增sku按钮的回调
+    addSku() {
+      this.scene = 2
+      // 通知子组件发三个请求
+      this.$refs.sku.getData()
     }
 
   }

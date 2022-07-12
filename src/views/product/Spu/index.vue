@@ -38,7 +38,7 @@
       <SkuForm v-show="scene ===2" ref="sku" @changeScene="changeScene" />
       <SpuForm v-show="scene ===1" ref="spu" @changeScene="changeScene" />
     </el-card>
-    <el-dialog :title="`${spu.spuName} 的sku列表`" :visible.sync="dialogTableVisible">
+    <el-dialog :title="`${spu.spuName} 的sku列表`" :visible.sync="dialogTableVisible" :before-close="close">
       <el-table v-loading="loading" :data="skuList" border>
         <el-table-column property="skuName" label="名称" />
         <el-table-column property="price" label="价格" />
@@ -75,7 +75,7 @@ export default {
       records: [], // spu数据列表
       total: 0, // 分页器总页数，
       scene: 0, // 用于切换组件，
-      dialogTableVisible: true,
+      dialogTableVisible: false,
       spu: {},
       skuList: [],
       loading: true
@@ -160,14 +160,21 @@ export default {
     },
     // 查看sku列表的按钮回调
     async showSkuList(spu) {
+      this.dialogTableVisible = true
       this.spu = spu
+      this.loading = true
       // 获取sku列表数据
       const res = await this.$API.spu.reqSkuList(spu.id)
       if (res.code === 200) {
         // console.log(res.data)
         this.skuList = res.data
-        this.dialogTableVisible = true
+
+        this.loading = false
       }
+    },
+    close(done) {
+      this.skuList = []
+      done()
     }
 
   }

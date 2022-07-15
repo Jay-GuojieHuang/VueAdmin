@@ -114,6 +114,7 @@ export default {
 
   width: 300px
   margin: 0 10px
+  height: 25px
 
 ul
 
@@ -166,4 +167,7 @@ ul li
 
 ::v-deep .saleRanking
   height: 300px
+
+::v-deep .el-card__header
+  border-bottom: 0px
 </style>

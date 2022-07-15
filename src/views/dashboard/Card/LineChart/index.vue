@@ -3,11 +3,11 @@
 </template>
 <script>
 // 引入echarts
-import ecahrts from 'echarts'
+import echarts from 'echarts'
 export default {
   name: 'LineCharts',
   mounted() {
-    const lineCharts = ecahrts.init(this.$refs.charts)
+    const lineCharts = echarts.init(this.$refs.charts)
     lineCharts.setOption({
       // title: {
       //   text: 'title'
